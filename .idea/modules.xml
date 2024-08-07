@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/msblog.iml" filepath="$PROJECT_DIR$/.idea/msblog.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/msblog.msblog.main.iml" filepath="$PROJECT_DIR$/.idea/modules/msblog.msblog.main.iml" />
     </modules>
   </component>
 </project>
