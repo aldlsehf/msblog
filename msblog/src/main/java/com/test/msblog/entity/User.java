@@ -23,10 +23,11 @@ public class User {
     @Pattern(regexp = "^[a-z0-9]*$", message = "작성자명은 알파벳 소문자와 숫자로만 구성되어야 합니다.")
     private String username;
 
-    @Column(nullable = false)
-    @Size(min = 8, max = 15, message = "비밀번호는 8자 이상 15자 이하만 가능합니다.")
-    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "비밀번호는 알파벳 대소문자와 숫자로만 구성되어야 합니다.")
+    @Column(name = "password", length = 255, nullable = false)
     private String password;
+
+
+    private String role;
 
     public User(String username, String password) {
         this.username = username;

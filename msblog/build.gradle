@@ -43,9 +43,9 @@ dependencies {
 	// Optional: for better validation messages
 	implementation 'org.glassfish:jakarta.el:4.0.2'
 
-	compileOnly group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
-	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
-	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
 }
 
