@@ -19,6 +19,7 @@ public class UserService {
             throw new IllegalArgumentException("이미 존재하는 회원입니다.");
         }
 
-        userRepository.save(new User(joinRequestDto.getUsername(), bCryptPasswordEncoder.encode(joinRequestDto.getPassword())));
+        String tmpRole = "ROLE_USER";
+        userRepository.save(new User(joinRequestDto.getUsername(), bCryptPasswordEncoder.encode(joinRequestDto.getPassword()), tmpRole));
     }
 }
