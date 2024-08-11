@@ -35,6 +35,11 @@ public class User {
         this.role = role;
     }
 
+    public User(String username, String role) {
+        this.username = username;
+        this.role = role;
+    }
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
 }

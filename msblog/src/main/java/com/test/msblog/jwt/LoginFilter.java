@@ -1,9 +1,10 @@
 package com.test.msblog.jwt;
 
-import com.test.msblog.dto.CustomUserDetails;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
+
 
     private final AuthenticationManager authenticationManager;
 
@@ -31,9 +33,32 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
-        //클라이언트 요청에서 username, password 추출
+        //클라이언트 요청에서 username, password 추출, 이게 폼 데이터 방식임
         String username = obtainUsername(request);
         String password = obtainPassword(request);
+
+        /*
+            application/json 방식
+        (LoginDTO 부분은 직접 DTO 구현)
+
+        LoginDTO loginDTO = new LoginDTO();
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            ServletInputStream inputStream = request.getInputStream();
+            String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+            loginDTO = objectMapper.readValue(messageBody, LoginDTO.class);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println(loginDTO.getUsername());
+
+        String username = loginDTO.getUsername();
+        String password = loginDTO.getPassword();
+
+         */
 
 
         //스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야 함
@@ -47,24 +72,38 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
 
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-
-        String username = customUserDetails.getUsername();
+        //유저 정보
+        String username = authentication.getName();
 
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
-
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(username, role, 60*60*10L);
+        //토큰 생성
+        String access = jwtUtil.createJwt("access", username, role, 600000L);
+        String refresh = jwtUtil.createJwt("refresh", username, role, 86400000L);
 
-        response.addHeader("Authorization", "Bearer " + token);
+        //응답 설정
+        response.setHeader("access", access);
+        response.addCookie(createCookie("refresh", refresh));
+        response.setStatus(HttpStatus.OK.value());
     }
 
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
         response.setStatus(401);
+    }
+
+    private Cookie createCookie(String key, String value) {
+
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(24 * 60 * 60);
+        //cookie.setSecure(true);
+        //cookie.setPath("/");
+        cookie.setHttpOnly(true);
+
+        return cookie;
     }
 }

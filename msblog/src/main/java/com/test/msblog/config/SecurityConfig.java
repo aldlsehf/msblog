@@ -63,6 +63,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/login", "/", "/api/join").permitAll()
                         .requestMatchers("/api/admin").hasRole("ADMIN")
+                        .requestMatchers("/reissue").permitAll()
                         .anyRequest().authenticated()); //->이 외의 요청은 로그인 한 사람만
 
         //JWTFilter 등록
